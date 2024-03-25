@@ -1,6 +1,6 @@
 # Класс арифметической дроби (Fraction) на JavaScript
 
-![image](https://github.com/wAkExGOD/arithmetic-fraction-class/assets/52173833/ea756283-b942-4542-b5bf-36a28d60753e)
+![image](https://github.com/wAkExGOD/arithmetic-fraction-class/assets/52173833/8745d681-b5de-4926-973a-4f6006728b43)
 
 Этот проект представляет собой реализацию класса арифметической дроби на JavaScript.
 Класс Fraction содержит методы для выполнения операций сложения, вычитания, умножения и деления дробей.
@@ -17,6 +17,7 @@ const a = new Fraction(1, 3);
 - `subtract(otherFraction)`: Вычитание дробей.
 - `multiply(otherFraction)`: Умножение дробей.
 - `divide(otherFraction)`: Деление дробей.
+- `isEqual(otherFraction)`: Проверка на равенство дробей.
 
 Пример использования:
 ```javascript
