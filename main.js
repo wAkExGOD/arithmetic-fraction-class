@@ -25,11 +25,6 @@ class Fraction {
     this.denominator = denominator
   }
 
-  #operations = {
-    ADD: "ADD",
-    SUBTRACT: "SUBTRACT",
-  }
-
   #errors = {
     NOT_VALID_OPERATION: "Operation is not valid",
     FRACTION_IS_NOT_VALID: "Numerator / denominator is not a number",
@@ -38,76 +33,65 @@ class Fraction {
 
   add(fraction) {
     this.#validateFraction(fraction)
-    const { numerator, denominator } =
-      this.#calculateFractionsWithCommonDenominator(
-        this,
-        fraction,
-        this.#operations.ADD
-      )
-    this.numerator = numerator
-    this.denominator = denominator
-    return this
+
+    const { f1, f2 } = Fraction.bringFractionsToCommonDenominator(this, fraction)
+    this.numerator = f1.numerator + f2.numerator
+    this.denominator = f1.denominator
+    return Fraction.reduceFraction(this)
   }
 
   subtract(fraction) {
     this.#validateFraction(fraction)
-    const { numerator, denominator } =
-      this.#calculateFractionsWithCommonDenominator(
-        this,
-        fraction,
-        this.#operations.SUBTRACT
-      )
-    this.numerator = numerator
-    this.denominator = denominator
-    return this
+
+    const { f1, f2 } = Fraction.bringFractionsToCommonDenominator(this, fraction)
+    this.numerator = f1.numerator - f2.numerator
+    this.denominator = f1.denominator
+    return Fraction.reduceFraction(this)
   }
 
   multiply(fraction) {
     this.#validateFraction(fraction)
+
     this.numerator *= fraction.numerator
     this.denominator *= fraction.denominator
-    return this
+    return Fraction.reduceFraction(this)
   }
 
   divide(fraction) {
     this.#validateFraction(fraction)
+
     this.numerator *= fraction.denominator
     this.denominator *= fraction.numerator
-    return this
+    return Fraction.reduceFraction(this)
   }
 
-  #calculateFractionsWithCommonDenominator(f1, f2, operation) {
-    if (!Object.keys(this.#operations).includes(operation)) {
-      throw new FractionError(this.#errors.NOT_VALID_OPERATION, operation)
-    }
+  isEqual(fraction) {
+    this.#validateFraction(fraction)
 
+    const f1 = Fraction.reduceFraction(this)
+    const f2 = Fraction.reduceFraction(fraction)
+
+    return f1.numerator === f2.numerator && f1.denominator === f2.denominator
+  }
+
+  static bringFractionsToCommonDenominator(f1, f2) {
     const { numerator: n1, denominator: d1 } = f1
     const { numerator: n2, denominator: d2 } = f2
 
-    let numerator = f1.numerator
-    let denominator = f1.denominator
+    if (d1 !== d2) {
+      const lcm = Fraction.calculateLCM(d1, d2)
 
-    if (d1 === d2) {
-      numerator =
-        operation === this.#operations.ADD
-          ? numerator + f2.numerator
-          : numerator - f2.numerator
-    } else {
-      const lcm = this.#calculateLCM(d1, d2)
-      numerator = this.#operations.ADD
-        ? (lcm / d1) * n1 + (lcm / d2) * n2
-        : (lcm / d1) * n1 - (lcm / d2) * n2
-      denominator = (lcm / d1) * d1
+      f1.numerator = (lcm / d1) * n1
+      f1.denominator = (lcm / d1) * d1
+      f2.numerator = (lcm / d2) * n2
+      f2.denominator = f1.denominator
     }
 
-    return {
-      numerator,
-      denominator,
-    }
+    return { f1, f2 }
   }
 
   // Least Common Multiple
-  #calculateLCM(...x) {
+  static calculateLCM(...x) {
     let j = Math.max.apply(null, x)
     while (true) {
       if (x.every((b) => j % b == 0)) {
@@ -115,6 +99,20 @@ class Fraction {
       }
       j++
     }
+  }
+
+  static reduceFraction(fraction) {
+    let m = fraction.numerator
+    let n = fraction.denominator
+
+    for (var i = 2; i <= m; i++) {
+      if (m % i === 0 && n % i === 0) {
+        fraction.numerator = m / i
+        fraction.denominator = n / i
+      }
+    }
+
+    return fraction
   }
 
   #validateFraction(fraction) {
@@ -147,15 +145,17 @@ class Fraction {
 try {
   const a = new Fraction(1, 3)
   const b = new Fraction(5, 2)
+  const c = new Fraction(1, 3)
 
   console.log(a.add(b).toString())
   console.log(a.subtract(b).toString())
   console.log(a.multiply(b).toString())
   console.log(a.divide(b).toString())
+  console.log(a.isEqual(c))
 
   // Errors:
-  // const c = new Fraction('1', 2)
-  // const d = new Fraction(Infinity, 2)
+  // const d = new Fraction('1', 2)
+  // const e = new Fraction(Infinity, 2)
 } catch (error) {
   console.error(error)
 }
