@@ -32,7 +32,8 @@ class Fraction {
 
   #errors = {
     NOT_VALID_OPERATION: "Operation is not valid",
-    NOT_VALID_FRACTION: "Fraction is not valid",
+    FRACTION_IS_NOT_VALID: "Numerator / denominator is not a number",
+    DENOMINATOR_IS_NEGATIVE: "Denominator should be positive",
   }
 
   add(fraction) {
@@ -124,11 +125,15 @@ class Fraction {
       typeof fraction?.denominator === "number" &&
       Number.isFinite(fraction?.denominator)
 
-    if (isNumeratorValid && isDenominatorValid) {
-      return true
+    if (!isNumeratorValid || !isDenominatorValid) {
+      throw new FractionError(this.#errors.FRACTION_IS_NOT_VALID, fraction)
     }
 
-    throw new FractionError(this.#errors.NOT_VALID_FRACTION, fraction)
+    if (fraction.denominator < 0) {
+      throw new FractionError(this.#errors.DENOMINATOR_IS_NEGATIVE, fraction?.denominator)
+    }
+
+    return true
   }
 
   toString() {
