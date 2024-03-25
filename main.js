@@ -140,10 +140,10 @@ try {
   const a = new Fraction(1, 3)
   const b = new Fraction(5, 2)
 
-  console.log(`${a.add(b)}`)
-  console.log(`${a.subtract(b)}`)
-  console.log(`${a.multiply(b)}`)
-  console.log(`${a.divide(b)}`)
+  console.log(a.add(b).toString())
+  console.log(a.subtract(b).toString())
+  console.log(a.multiply(b).toString())
+  console.log(a.divide(b).toString())
 
   // Errors:
   // const c = new Fraction('1', 2)
