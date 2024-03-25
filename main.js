@@ -99,13 +99,11 @@ class Fraction {
     return Fraction.reduceFraction(this)
   }
 
-  isEqual(fraction) {
-    Fraction.validateFraction(fraction)
+  static areEqual(f1, f2) {
+    const newF1 = Fraction.reduceFraction(Fraction.validateFraction(f1))
+    const newF2 = Fraction.reduceFraction(Fraction.validateFraction(f2))
 
-    const f1 = Fraction.reduceFraction(this)
-    const f2 = Fraction.reduceFraction(fraction)
-
-    return f1.numerator === f2.numerator && f1.denominator === f2.denominator
+    return newF1.numerator === newF2.numerator && newF1.denominator === newF2.denominator
   }
 
   static reduceFraction(fraction) {
@@ -161,7 +159,7 @@ try {
   console.log(a.multiply(b).toString())
   console.log(a.divide(b).toString())
   console.log(Fraction.reduceFraction(c).toString())
-  console.log(a.isEqual(c))
+  console.log(Fraction.areEqual(a, c))
 
   // Errors:
   // const d = new Fraction('1', 2)
