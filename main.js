@@ -130,7 +130,10 @@ class Fraction {
     }
 
     if (fraction.denominator < 0) {
-      throw new FractionError(this.#errors.DENOMINATOR_IS_NEGATIVE, fraction?.denominator)
+      throw new FractionError(
+        this.#errors.DENOMINATOR_IS_NEGATIVE,
+        fraction?.denominator
+      )
     }
 
     return true
