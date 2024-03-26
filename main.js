@@ -27,7 +27,8 @@ class Fraction {
 
   static errors = {
     NOT_VALID_OPERATION: "Operation is not valid",
-    FRACTION_IS_NOT_VALID: "Numerator / denominator is not a number",
+    FRACTION_IS_NOT_NUMBER: "Numerator / denominator is not a number",
+    FRACTION_IS_NOT_INTEGER: "Numerator / denominator is not an integer",
     DENOMINATOR_IS_ZERO: "Denominator can not be zero",
   }
 
@@ -103,7 +104,10 @@ class Fraction {
     const newF1 = Fraction.reduceFraction(Fraction.validateFraction(f1))
     const newF2 = Fraction.reduceFraction(Fraction.validateFraction(f2))
 
-    return newF1.numerator === newF2.numerator && newF1.denominator === newF2.denominator
+    return (
+      newF1.numerator === newF2.numerator &&
+      newF1.denominator === newF2.denominator
+    )
   }
 
   static reduceFraction(fraction) {
@@ -121,15 +125,22 @@ class Fraction {
   }
 
   static validateFraction(fraction) {
-    const isNumeratorValid =
+    const isNumeratorNumber =
       typeof fraction?.numerator === "number" &&
       Number.isFinite(fraction?.numerator)
-    const isDenominatorValid =
+    const isDenominatorNumber =
       typeof fraction?.denominator === "number" &&
       Number.isFinite(fraction?.denominator)
 
-    if (!isNumeratorValid || !isDenominatorValid) {
-      throw new FractionError(Fraction.errors.FRACTION_IS_NOT_VALID, fraction)
+    if (!isNumeratorNumber || !isDenominatorNumber) {
+      throw new FractionError(Fraction.errors.FRACTION_IS_NOT_NUMBER, fraction)
+    }
+
+    const isNumeratorInteger = Number.isInteger(fraction?.numerator)
+    const isDenominatorInteger = Number.isInteger(fraction?.denominator)
+
+    if (!isNumeratorInteger || !isDenominatorInteger) {
+      throw new FractionError(Fraction.errors.FRACTION_IS_NOT_INTEGER, fraction)
     }
 
     if (fraction.denominator === 0) {
