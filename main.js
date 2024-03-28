@@ -15,18 +15,14 @@ class Fraction {
   #denominator
 
   constructor(numerator, denominator) {
-    Fraction.validateNumber(numerator)
-    Fraction.validateNumber(denominator)
-    Fraction.validateFraction({
-      numerator,
-      denominator,
-    })
+    this.numerator = numerator
+    this.denominator = denominator
 
-    this.#numerator = numerator
-    this.#denominator = denominator
+    Fraction.validateFraction(this)
   }
 
   static errors = {
+    NOT_FRACTION_INSTANCE: "Not a Fraction instance",
     NOT_VALID_OPERATION: "Operation is not valid",
     NOT_VALID_NUMBER: "Number is not valid",
     NOT_INTEGER_NUMBER: "Number is not integer",
@@ -68,7 +64,10 @@ class Fraction {
     const { numerator, denominator } = fraction
     Fraction.validateNumber(numerator)
     Fraction.validateNumber(denominator)
-    Fraction.validateFraction(fraction)
+    
+    if (!Fraction.validateFraction(fraction)) {
+      return null
+    }
 
     this.#numerator = numerator
     this.#denominator = denominator
@@ -77,7 +76,9 @@ class Fraction {
   }
 
   add(fraction) {
-    Fraction.validateFraction(fraction)
+    if (!Fraction.validateFraction(fraction)) {
+      return this
+    }
 
     const { f1, f2 } = Fraction.bringFractionsToCommonDenominator(
       this,
@@ -90,7 +91,9 @@ class Fraction {
   }
 
   subtract(fraction) {
-    Fraction.validateFraction(fraction)
+    if (!Fraction.validateFraction(fraction)) {
+      return this
+    }
 
     const { f1, f2 } = Fraction.bringFractionsToCommonDenominator(
       this,
@@ -103,7 +106,9 @@ class Fraction {
   }
 
   multiply(fraction) {
-    Fraction.validateFraction(fraction)
+    if (!Fraction.validateFraction(fraction)) {
+      return this
+    }
 
     this.numerator *= fraction.numerator
     this.denominator *= fraction.denominator
@@ -112,7 +117,9 @@ class Fraction {
   }
 
   divide(fraction) {
-    Fraction.validateFraction(fraction)
+    if (!Fraction.validateFraction(fraction)) {
+      return this
+    }
 
     this.numerator *= fraction.denominator
     this.denominator *= fraction.numerator
@@ -121,16 +128,28 @@ class Fraction {
   }
 
   static areEqual(f1, f2) {
-    const newF1 = Fraction.reduceFraction(Fraction.validateFraction(f1))
-    const newF2 = Fraction.reduceFraction(Fraction.validateFraction(f2))
+    const validatedF1 = Fraction.validateFraction(f1)
+    const validatedF2 = Fraction.validateFraction(f2)
+    if (!validatedF1 || !validatedF2) {
+      return false
+    }
+
+    const reducedF1 = Fraction.reduceFraction(validatedF2)
+    const reducedF2 = Fraction.reduceFraction(validatedF2)
 
     return (
-      newF1.numerator === newF2.numerator &&
-      newF1.denominator === newF2.denominator
+      reducedF1.numerator === reducedF2.numerator &&
+      reducedF1.denominator === reducedF2.denominator
     )
   }
 
   static bringFractionsToCommonDenominator(f1, f2) {
+    const validatedF1 = Fraction.validateFraction(f1)
+    const validatedF2 = Fraction.validateFraction(f2)
+    if (!validatedF1 || !validatedF2) {
+      return null
+    }
+
     const { numerator: n1, denominator: d1 } = f1
     const { numerator: n2, denominator: d2 } = f2
 
@@ -161,6 +180,11 @@ class Fraction {
   }
 
   static reduceFraction(fraction) {
+    const validatedFraction = Fraction.validateFraction(fraction)
+    if (!validatedFraction) {
+      return fraction
+    }
+
     let m = fraction.numerator
     let n = fraction.denominator
 
@@ -194,6 +218,10 @@ class Fraction {
 
   static validateFraction(fraction) {
     try {
+      if (!(fraction instanceof Fraction)) {
+        throw new FractionError(Fraction.errors.NOT_FRACTION_INSTANCE)
+      }
+
       if (fraction.denominator === 0) {
         throw new FractionError(Fraction.errors.DENOMINATOR_IS_ZERO)
       }
@@ -223,11 +251,12 @@ console.log(a.subtract(b).toString())
 console.log(a.multiply(b).toString())
 console.log(a.divide(b).toString())
 console.log(Fraction.reduceFraction(c).toString())
-console.log(Fraction.areEqual(a, c))
+console.log(Fraction.areEqual(a, b))
 console.log(a.set(b).toString())
 
 // Errors:
 // const d = new Fraction('1', 2)
 // const e = new Fraction(Infinity, 2)
 // const f = new Fraction(3, 0)
+// console.log(Fraction.areEqual(a, {numerator: 1, denominator: 2}))
 // a.set('1')
